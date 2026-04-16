@@ -29,7 +29,7 @@ Your task is to review the provided `Source Text` and its initial `Machine Trans
 
 # ตั้งค่าโมเดล
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-1.5-pro-latest",
     system_instruction=system_instruction
 )
 
