@@ -31,25 +31,37 @@ st.divider()
 
 # 2. ส่วนตั้งค่า (Settings & Constraints)
 with st.sidebar:
-    # 🌓 ฟีเจอร์ใหม่: ปุ่มสลับธีม Dark/Light
-    theme_toggle = st.radio("🎨 Theme (ธีมหน้าจอ)", ["☀️ Light Mode", "🌙 Dark Mode"], horizontal=True)
+theme_toggle = st.radio("🎨 Theme (ธีมหน้าจอ)", ["☀️ Light Mode", "🌙 Dark Mode"], horizontal=True)
     
-    # --- CSS Injection สำหรับ Dark Mode ---
+    # --- CSS Injection สำหรับ Dark Mode (เวอร์ชันแก้ตาบอดสี!) ---
     if theme_toggle == "🌙 Dark Mode":
         st.markdown("""
         <style>
-            /* เปลี่ยนสีพื้นหลังหลักและตัวอักษร */
-            .stApp { background-color: #0E1117; color: #FAFAFA; }
-            /* เปลี่ยนสี Sidebar */
-            [data-testid="stSidebar"] { background-color: #262730; }
-            /* เปลี่ยนสีกล่องข้อความ Text Area / Input */
-            .stTextArea textarea, .stTextInput input { background-color: #1E1E24 !important; color: #FAFAFA !important; border: 1px solid #555 !important; }
-            /* เปลี่ยนสี Dropdown */
-            div[data-baseweb="select"] > div { background-color: #1E1E24 !important; color: #FAFAFA !important; }
-            /* ปรับสีแจ้งเตือนต่างๆ ให้เข้ากับ Dark Mode */
-            div[data-testid="stAlert"] { background-color: #1C2331 !important; color: #FAFAFA !important; border: 1px solid #333 !important; }
-            /* ปรับสีตัวเลข Metrics */
-            [data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: #FAFAFA !important; }
+            /* เปลี่ยนพื้นหลังหลักและ Header */
+            .stApp, .stApp > header { background-color: #0E1117 !important; }
+            /* เปลี่ยนพื้นหลัง Sidebar */
+            [data-testid="stSidebar"] { background-color: #262730 !important; }
+            
+            /* บังคับตัวอักษรทั้งหมดให้เป็นสีสว่าง (ขาว/เทาอ่อน) */
+            p, h1, h2, h3, h4, h5, h6, label, span, .st-markdown { 
+                color: #E0E0E0 !important; 
+            }
+            
+            /* ปรับสีกล่องข้อความและ Dropdown */
+            .stTextArea textarea, .stTextInput input, div[data-baseweb="select"] > div { 
+                background-color: #1E1E24 !important; 
+                color: #FFFFFF !important; 
+                border: 1px solid #555 !important; 
+            }
+            
+            /* ปรับแต่งกล่อง Upload ไฟล์ให้ตัวอักษรสว่างขึ้น */
+            [data-testid="stFileUploadDropzone"] div { color: #E0E0E0 !important; }
+            
+            /* ปรับสีของ Metrics (ตัวเลขสถิติ) */
+            [data-testid="stMetricValue"] { color: #FFFFFF !important; }
+            
+            /* ปรับกรอบปุ่มกด */
+            button { border-color: #555 !important; color: #E0E0E0 !important; }
         </style>
         """, unsafe_allow_html=True)
         
@@ -62,7 +74,7 @@ with st.sidebar:
         value="กึ่งทางการ" 
     )
     
-    char_limit = st.slider("📏 จำกัดจำนวนตัวอักษรต่อบรรทัด", 20, 60, 45)
+    char_limit = st.slider("📏 จำกัดจำนวนตัวอักษรต่อบรรทัด (Chars. limit)", 20, 60, 45)
     
     st.divider()
     st.subheader("📌 คลังคำศัพท์ (Glossary)")
