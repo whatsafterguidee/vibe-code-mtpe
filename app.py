@@ -1,16 +1,5 @@
 import streamlit as st
 import time
-import re # นำเข้าไลบรารีจัดการข้อความ
-
-def count_display_chars(text):
-    # สั่งให้ลบสระบน-ล่าง และวรรณยุกต์ทิ้งไปก่อนชั่วคราว
-    # \u0e31 คือ ไม้หันอากาศ
-    # \u0e34-\u0e3a คือ สระ อิ อี อึ อื อุ อู พินทุ
-    # \u0e47-\u0e4e คือ ไม้ไต่คู้ วรรณยุกต์ และการันต์
-    text_without_vowels = re.sub(r'[\u0e31\u0e34-\u0e3a\u0e47-\u0e4e]', '', text)
-    
-    # พอลบทิ้งแล้ว ค่อยนับความยาวที่เหลือ
-    return len(text_without_vowels)
 import re
 
 # --- ฟังก์ชันนับตัวอักษรแบบคน (ไม่นับสระลอย/วรรณยุกต์) ---
