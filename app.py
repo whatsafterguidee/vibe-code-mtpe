@@ -8,16 +8,16 @@ def count_display_chars(text):
     text_without_vowels = re.sub(r'[\u0e31\u0e34-\u0e3a\u0e47-\u0e4e]', '', text)
     return len(text_without_vowels)
 
-# --- ฟังก์ชันบังคับใช้ Glossary ทั่วไป ---
+# --- ฟังก์ชันบังคับใช้ Glossary ทั่วไป (Fallback) ---
 def apply_glossary(text, glossary_dict):
     if not glossary_dict:
         return text
     modified_text = text
     for source_word, target_word in glossary_dict.items():
         if source_word.lower() == 'i':
-            modified_text = modified_text.replace("ผม", target_word).replace("ฉัน", target_word)
-        elif source_word.lower() == 'คุณ':
-            modified_text = modified_text.replace("คุณ", target_word)
+            modified_text = modified_text.replace("ผม", target_word).replace("ฉัน", target_word).replace("ข้า", target_word)
+        elif source_word.lower() == 'you':
+            modified_text = modified_text.replace("คุณ", target_word).replace("ท่าน", target_word)
         else:
             pattern = re.compile(re.escape(source_word), re.IGNORECASE)
             modified_text = pattern.sub(target_word, modified_text)
@@ -39,7 +39,7 @@ with st.sidebar:
         value="กึ่งทางการ" 
     )
     
-    char_limit = st.slider("📏 จำกัดจำนวนตัวอักษรต่อบรรทัด", 20, 50, 40)
+    char_limit = st.slider("📏 จำกัดจำนวนตัวอักษรต่อบรรทัด", 20, 60, 45)
     
     st.divider()
     st.subheader("📌 คลังคำศัพท์ (Glossary)")
@@ -48,7 +48,7 @@ with st.sidebar:
     
     st.markdown("**หรือพิมพ์คำบังคับด่วน:**")
     glossary_input = st.text_area("รูปแบบ: คำต้นฉบับ=คำแปล", 
-                                 placeholder="I=เรา\nคุณ=แก",
+                                 placeholder="epi=เอพิเนฟริน\ncharge paddles=ชาร์จเครื่องกระตุกหัวใจ",
                                  height=100)
     
     master_glossary = {}
@@ -81,72 +81,14 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("🇬🇧 Input")
     context_choice = st.selectbox("🎬 เลือกประเภทซีรีส์", 
-                                  ["ซีรีส์วัยรุ่น / Slice of Life", 
-                                   "ซีรีส์การแพทย์ (Medical Drama)", 
-                                   "ซีรีส์ย้อนยุค (Period Drama)"])
+                                  ["ซีรีส์วัยรุ่น / Slice of Life (Stranger Things)", 
+                                   "ซีรีส์การแพทย์ (Grey's Anatomy)", 
+                                   "ซีรีส์ย้อนยุค (Bridgerton)"])
     
-    if context_choice == "ซีรีส์วัยรุ่น / Slice of Life":
-        default_src = "I just want you to know that you are my safe zone. Are you okay with that?"
-        default_mt = "ฉันแค่อยากให้คุณรู้ว่าคุณคือโซนปลอดภัยของฉัน คุณโอเคกับสิ่งนั้นไหม?"
-    elif context_choice == "ซีรีส์การแพทย์ (Medical Drama)":
-        default_src = "The patient is crashing! Administer 50mg of epinephrine IV push immediately."
-        default_mt = "ผู้ป่วยกำลังชน! บริหารเอพิเนฟริน 50 มก. ดันไอวี ทันที"
-    else:
-        default_src = "I shall not forgive this treason. Guards, take him away!"
-        default_mt = "ฉันจะไม่ให้อภัยการกบฏนี้ ยาม พาเขาออกไป!"
-
-    timecode = st.text_input("⏱️ Timecode", value="00:01:23,400 --> 00:01:25,500")
-    source_text = st.text_area("ประโยคต้นฉบับ (Source)", value=default_src, height=100)
-    mt_text = st.text_area("คำแปลจากระบบ (MT)", value=default_mt, height=100)
-
-# 4. ปุ่มประมวลผลและแสดงผลลัพธ์
-if st.button("🚀 เริ่มการเกลาซับไตเติล", use_container_width=True):
-    with st.spinner("🧠 AI กำลังคำนวณบริบทและตรวจสอบกฎ..."):
-        time.sleep(1.5)
-        
-        st.success("ประมวลผลเสร็จสิ้น!")
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Tone Match", "100%")
-        
-        st.divider()
-        st.subheader("✨ ผลลัพธ์ซับไตเติลที่แนะนำ")
-        
-        # --- ลอจิกจำลองผลลัพธ์ (อัปเกรดให้ฉลาดขึ้น) ---
-        if context_choice == "ซีรีส์วัยรุ่น / Slice of Life":
-            if formality_level == "กันเอง/สแลง":
-                final_res = "แกรู้ปะ ว่าแกคือเซฟโซนของฉันนะ แกโอเคไหม?"
-            else:
-                final_res = "ผมอยากให้คุณรู้ว่าคุณคือพื้นที่ปลอดภัยของผม คุณจะว่าอะไรไหมครับ?"
-            # กรองคำสรรพนามทั่วไป
-            final_res = apply_glossary(final_res, master_glossary)
-        
-        elif context_choice == "ซีรีส์การแพทย์ (Medical Drama)":
-            # จำลองความฉลาดของ AI: ถ้าเจอคำว่า IV push ใน Excel ให้เปลี่ยนโครงสร้างประโยคเป็นภาษาหมอเลย
-            has_iv_push = any("iv push" in k.lower() for k in master_glossary.keys())
-            
-            if has_iv_push:
-                # ดึงคำแปลจาก Excel มาใช้
-                target_iv = next(v for k, v in master_glossary.items() if "iv push" in k.lower())
-                final_res = f"คนไข้อาการทรุดแล้ว! ให้เอพิเนฟริน 50 มก. {target_iv} ทันที"
-            else:
-                # ถ้าไม่มี Glossary ให้แปลทื่อๆ ไปก่อน
-                final_res = "คนไข้อาการแย่แล้ว! ให้เอพิเนฟริน 50 มก. ทางสายน้ำเกลือเดี๋ยวนี้"
-                
-        else: # ซีรีส์ย้อนยุค
-            if formality_level == "ทางการ/ย้อนยุค":
-                final_res = "ข้าจะไม่มีวันอภัยให้กบฏครั้งนี้ ทหาร! ลากตัวมันออกไป"
-            else:
-                final_res = "ฉันไม่ยกโทษให้คนทรยศหรอกนะ รปภ. ลากเขาออกไปที"
-
-        # --- คำนวณความยาว ---
-        display_length = count_display_chars(final_res)
-        is_passed = "ผ่าน" if display_length <= char_limit else "เกินขีดจำกัด"
-        
-        m2.metric("Length Check", f"{display_length}/{char_limit}", is_passed, delta_color="normal" if is_passed == "ผ่าน" else "inverse")
-        m3.metric("Glossary Sync", f"Active ({len(master_glossary)} words)" if master_glossary else "None")
-        m4.metric("Formality", formality_level)
-
-        st.info(f"**ซับไตเติลไฟนอล:** {final_res}")
-        
-        srt_content = f"1\n{timecode}\n{final_res}\n"
-        st.download_button("💾 ดาวน์โหลดไฟล์ .srt", srt_content, "sub.srt", use_container_width=True)
+    if context_choice == "ซีรีส์วัยรุ่น / Slice of Life (Stranger Things)":
+        default_src = "There's more to life than stupid boys."
+        default_mt = "มีอะไรในชีวิตมากกว่าเด็กผู้ชายโง่ๆ"
+        timecode_val = "00:15:23,400 --> 00:15:25,500"
+    elif context_choice == "ซีรีส์การแพทย์ (Grey's Anatomy)":
+        default_src = "V-fib! Push 1 milligram of epi and charge paddles to 200."
+        default_mt = "วีไฟบ์! ดันอีพาย 1 มิลลิกรัม
