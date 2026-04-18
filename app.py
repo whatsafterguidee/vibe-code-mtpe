@@ -91,4 +91,12 @@ with col1:
         timecode_val = "00:15:23,400 --> 00:15:25,500"
     elif context_choice == "ซีรีส์การแพทย์ (Grey's Anatomy)":
         default_src = "V-fib! Push 1 milligram of epi and charge paddles to 200."
-        default_mt = "วีไฟบ์! ดันอีพาย 1 มิลลิกรัม
+        default_mt = "วีไฟบ์! ดันอีพาย 1 มิลลิกรัม และชาร์จไม้พายไปที่ 200"
+        timecode_val = "00:22:10,100 --> 00:22:12,800"
+    else:
+        default_src = "You are the bane of my existence and the object of all my desires."
+        default_mt = "คุณคือความหายนะของการดำรงอยู่ของฉันและเป็นวัตถุแห่งความปรารถนาทั้งหมดของฉัน"
+        timecode_val = "00:45:30,000 --> 00:45:34,200"
+
+    timecode = st.text_input("⏱️ Timecode", value=timecode_val)
+    source_text = st.text_area("ประโยคต้นฉบับ
