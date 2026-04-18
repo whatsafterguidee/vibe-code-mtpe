@@ -99,4 +99,55 @@ with col1:
         timecode_val = "00:45:30,000 --> 00:45:34,200"
 
     timecode = st.text_input("⏱️ Timecode", value=timecode_val)
-    source_text = st.text_area("ประโยคต้นฉบับ
+    source_text = st.text_area("ประโยคต้นฉบับ(Source)", value=default_src, height=100)
+    mt_text = st.text_area("คำแปลจากระบบ (MT)", value=default_mt, height=100)
+
+# 4. ปุ่มประมวลผลและแสดงผลลัพธ์
+if st.button("🚀 เริ่มการเกลาซับไตเติล", use_container_width=True):
+    with st.spinner("🧠 AI กำลังประมวลผล Glossary Injection และปรับไวยากรณ์..."):
+        time.sleep(1.8)
+        
+        st.success("ประมวลผลเสร็จสิ้น!")
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Tone Match", "100%")
+        
+        st.divider()
+        st.subheader("✨ ผลลัพธ์ซับไตเติลที่แนะนำ")
+        
+        # --- ลอจิกจำลองผลลัพธ์ที่เนียนระดับ AI 100% ---
+        if context_choice == "ซีรีส์วัยรุ่น / Slice of Life (Stranger Things)":
+            if formality_level == "กันเอง/สแลง":
+                final_res = "ชีวิตเรามีอะไรให้ทำอีกเยอะ ดีกว่ามานั่งงมงายกับผู้ชายงี่เง่านะแก"
+            else:
+                final_res = "ชีวิตยังมีอะไรอีกมากมาย มากกว่าแค่เรื่องผู้ชายแย่ๆ นะ"
+            final_res = apply_glossary(final_res, master_glossary)
+        
+        elif context_choice == "ซีรีส์การแพทย์ (Grey's Anatomy)":
+            has_medical_terms = any("epi" in k.lower() or "charge paddles" in k.lower() for k in master_glossary.keys())
+            
+            if has_medical_terms:
+                final_res = "คนไข้หัวใจเต้นผิดจังหวะ! ฉีดเอพิเนฟริน 1 มิลลิกรัม แล้วชาร์จเครื่องกระตุกหัวใจที่ 200 จูล"
+            else:
+                final_res = "วีไฟบ์! ดันอีพาย 1 มิลลิกรัม และชาร์จไม้พายไปที่ 200"
+                
+        else: # ซีรีส์ย้อนยุค Bridgerton
+            if formality_level == "ทางการ/ย้อนยุค":
+                final_res = "ท่านคือความปั่นป่วนในชีวิตข้า และเป็นยอดปรารถนาเพียงหนึ่งเดียวของข้า"
+            elif formality_level == "กันเอง/สแลง":
+                final_res = "แกทำให้ชีวิตฉันวุ่นวาย แต่ฉันก็หยุดคิดถึงแกไม่ได้เลยจริงๆ"
+            else:
+                final_res = "คุณคือความวุ่นวายในชีวิตฉัน และเป็นเพียงสิ่งเดียวที่ฉันปรารถนา"
+            final_res = apply_glossary(final_res, master_glossary)
+
+        # --- คำนวณความยาว ---
+        display_length = count_display_chars(final_res)
+        is_passed = "ผ่าน" if display_length <= char_limit else "เกินขีดจำกัด"
+        
+        m2.metric("Length Check", f"{display_length}/{char_limit}", is_passed, delta_color="normal" if is_passed == "ผ่าน" else "inverse")
+        m3.metric("Glossary Sync", f"Active ({len(master_glossary)} words)" if master_glossary else "None")
+        m4.metric("Formality", formality_level)
+
+        st.info(f"**ซับไตเติลไฟนอล:** {final_res}")
+        
+        srt_content = f"1\n{timecode}\n{final_res}\n"
+        st.download_button("💾 ดาวน์โหลดไฟล์ .srt", srt_content, "sub.srt", use_container_width=True)
