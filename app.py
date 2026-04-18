@@ -31,7 +31,7 @@ st.divider()
 
 # 2. ส่วนตั้งค่า (Settings & Constraints)
 with st.sidebar:
-theme_toggle = st.radio("🎨 Theme (ธีมหน้าจอ)", ["☀️ Light Mode", "🌙 Dark Mode"], horizontal=True)
+    theme_toggle = st.radio("🎨 Theme (ธีมหน้าจอ)", ["☀️ Light Mode", "🌙 Dark Mode"], horizontal=True)
     
     # --- CSS Injection สำหรับ Dark Mode (เวอร์ชันแก้ตาบอดสี!) ---
     if theme_toggle == "🌙 Dark Mode":
