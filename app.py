@@ -24,14 +24,37 @@ def apply_glossary(text, glossary_dict):
     return modified_text
 
 # 1. ตั้งค่าหน้าเพจ
-st.set_page_config(page_title="SubSync Pro", page_icon="🎬", layout="wide")
-st.title("🎬 SubSync Pro: Professional Subtitle Localizer")
-st.markdown("ระบบเกลาซับไตเติลอัจฉริยะ: ควบคุมศัพท์เฉพาะทาง ความยาว และระดับความสุภาพ")
+st.set_page_config(page_title="SubSync", page_icon="🎬", layout="wide")
+st.title("🎬 SubSync: Your Subtitle Localization Assistant")
+st.markdown("ระบบช่วยเกลาซับไตเติล: ควบคุมศัพท์เฉพาะทาง ความยาว และระดับความสุภาพ")
 st.divider()
 
 # 2. ส่วนตั้งค่า (Settings & Constraints)
 with st.sidebar:
-    st.header("⚙️ การตั้งค่าการเกลาซับ")
+    # 🌓 ฟีเจอร์ใหม่: ปุ่มสลับธีม Dark/Light
+    theme_toggle = st.radio("🎨 Theme (ธีมหน้าจอ)", ["☀️ Light Mode", "🌙 Dark Mode"], horizontal=True)
+    
+    # --- CSS Injection สำหรับ Dark Mode ---
+    if theme_toggle == "🌙 Dark Mode":
+        st.markdown("""
+        <style>
+            /* เปลี่ยนสีพื้นหลังหลักและตัวอักษร */
+            .stApp { background-color: #0E1117; color: #FAFAFA; }
+            /* เปลี่ยนสี Sidebar */
+            [data-testid="stSidebar"] { background-color: #262730; }
+            /* เปลี่ยนสีกล่องข้อความ Text Area / Input */
+            .stTextArea textarea, .stTextInput input { background-color: #1E1E24 !important; color: #FAFAFA !important; border: 1px solid #555 !important; }
+            /* เปลี่ยนสี Dropdown */
+            div[data-baseweb="select"] > div { background-color: #1E1E24 !important; color: #FAFAFA !important; }
+            /* ปรับสีแจ้งเตือนต่างๆ ให้เข้ากับ Dark Mode */
+            div[data-testid="stAlert"] { background-color: #1C2331 !important; color: #FAFAFA !important; border: 1px solid #333 !important; }
+            /* ปรับสีตัวเลข Metrics */
+            [data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: #FAFAFA !important; }
+        </style>
+        """, unsafe_allow_html=True)
+        
+    st.divider()
+    st.header("⚙️ การตั้งค่า (Setting)")
     
     formality_level = st.select_slider(
         "🎭 ระดับความสุภาพ (Formality)",
@@ -79,11 +102,11 @@ with st.sidebar:
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("🇬🇧 Input")
+    st.subheader("🌐 Input")
     context_choice = st.selectbox("🎬 เลือกประเภทซีรีส์", 
-                                  ["ซีรีส์วัยรุ่น / Slice of Life (Stranger Things)", 
-                                   "ซีรีส์การแพทย์ (Grey's Anatomy)", 
-                                   "ซีรีส์ย้อนยุค (Bridgerton)"])
+                                  ["ซีรีส์วัยรุ่น / Slice of Life", 
+                                   "ซีรีส์การแพทย์", 
+                                   "ซีรีส์ย้อนยุค"])
     
     if context_choice == "ซีรีส์วัยรุ่น / Slice of Life (Stranger Things)":
         default_src = "There's more to life than stupid boys."
